@@ -5,6 +5,12 @@ a new Rails application. It configures common (and not so common) gems
 and plugins for you. New configurations can be added by adding your
 code into the gems lib directory.
 
+It's at a higher abstraction level than Rails' templates so you have to
+write even less code. My plan for the future is to use the templates language
+to implement tav_for_rails' methods.
+
+You must regard it as alpha software.
+
 == Website
 
 * Homepage[http://www.connettiva.eu/tav_for_rails]
