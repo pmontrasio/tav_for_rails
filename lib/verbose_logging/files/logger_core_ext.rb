@@ -18,7 +18,11 @@ module DataToThread
 
   # Adds the session_label to the Thread.
   def assign_data_to_thread
-    Thread.current[:action_controller_session_id] = session_label
+    # it could also be ActionController::Base.session_options[:key], check
+    # http://stackoverflow.com/questions/1001597/accessing-the-session-key-cookie-name-from-anywhere-in-rails
+    session_id = $SESSION_ID || cookies[ActionController::Base.session_options[:session_key]] || "NOSESSION"
+    login = logged_in? ? current_user.login : "NOLOGIN"
+    Thread.current[:action_controller_session_id] = "#{login}:#{session_id}"
   end
 
   # This the method that composes the user:session_id label for the log line
@@ -59,23 +63,20 @@ module ActiveSupport
       # Don't use DateTime, it's very slow because it uses Date for the day/month/year part
       # and Date is slow! http://www.webair.it/blog/2009/03/05/ruby-ancora-sulle-prestazioni/
       time = Time.now.getutc.strftime("%Y%m%d%H%M%S")
-      session_id = Thread.current[:action_controller_session_id]
-      prefix = %(#{time}:#{LEVEL_STRING[severity]}:#{$$})
-      if session_id
-        # Injecting the extra log info and handling multiline log messages
-        # You may have to use \r\n or \r in the gsub if you run on Windows or on a Mac
-        # (it's an untested guess)
-        long_prefix = %(#{prefix}:#{session_id})
-        message = %(#{long_prefix}:#{message.gsub("\n", "\n#{long_prefix}")})
-        # Use this instead if you don't want multiline support
-        #message = long_prefix << message
+      if $SESSION_ID
+        session_label = "NOLOGIN:" + $SESSION_ID + ":"
       else
-        # for the Processing and Parameters log lines the extra info is not
-        # in Thread.current[:action_controller_session_id] so we have to
-        # monkey patch ActionController to add them into message.
-        # This is done in Part 3 below.
-        message = %(#{prefix}:NOLOGIN:NOSESSION:#{message})
+        session_label = Thread.current[:action_controller_session_id] || "NOLOGIN:NOSESSION"
       end
+      prefix = %(#{time}:#{LEVEL_STRING[severity]}:#{$$})
+
+      # Injecting the extra log info and handling multiline log messages
+      # You may have to use \r\n or \r in the gsub if you run on Windows or on a Mac
+      # (it's an untested guess)
+      long_prefix = %(#{prefix}:#{session_label})
+      message = %(#{long_prefix}:#{message.gsub("\n", "\n#{long_prefix}:")})
+      # Use this instead if you don't want multiline support
+      #message = long_prefix << message
 
       message = "#{message}\n" unless message[-1] == ?\n
       buffer << message
@@ -114,7 +115,8 @@ module ActionController
 
     # Monkey patched method. Adds session_label at the beginning of the line
     def log_processing_for_request_id
-      request_id = %(#{session_label}:  Processing #{self.class.name}\##{action_name})
+      assign_data_to_thread
+      request_id = %(  Processing #{self.class.name}\##{action_name})
       request_id = %(#{request_id} to #{params[:format]}) if params[:format]
       request_id = %(#{request_id} (for #{request_origin}) [#{request.method.to_s.upcase}])
       logger.info request_id
@@ -124,7 +126,7 @@ module ActionController
     def log_processing_for_parameters
       parameters = respond_to?(:filter_parameters) ? filter_parameters(params) : params.dup
       parameters = parameters.except!(:controller, :action, :format, :_method)
-      logger.info %(#{session_label}:  Parameters: #{parameters.inspect}) unless parameters.empty?
+      logger.info %(  Parameters: #{parameters.inspect}) unless parameters.empty?
     end
 
   end

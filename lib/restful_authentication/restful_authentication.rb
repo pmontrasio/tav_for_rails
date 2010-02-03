@@ -36,6 +36,7 @@ class RestfulAuthentication
   map.resources :users, :member => { :suspend => :put, :unsuspend => :put, :purge => :delete }")
     Utils.db_migrate # execs the migration to create the users table
     Utils.add_to_rails_initializer("  config.active_record.observers = :user_observer")
+    # FIXME copy the file in the plugin directory and delete the one in tav's files/
     Utils.copy_to_lib("restful_authentication", "authenticated_system.rb")
     Utils.add_to_application_controller("  include AuthenticatedSystem")
   end

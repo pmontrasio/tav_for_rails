@@ -4,7 +4,7 @@ require "../lib/tav_for_rails"
 
 include TavForRails
 
-project_name = "eventstrending"
+project_name = "demo"
 
 rails = TavForRails::Project.create(project_name,
                                  :rails_version => "2.3.5",
@@ -26,18 +26,6 @@ rails.add "Aasm"
 rails.add "TzInfo"
 #rails.add "Hoptoad", :api_key => "1234567890" # use your key
 rails.add "RestfulAuthentication"
-
-=begin
-
-rails.add "Selenium"
-
-rails.add "orbited" ???
-see http://fuglyatblogging.wordpress.com/2008/10/08/http-push-aka-comet-with-orbited-and-rails/
-
-
-rails.add "delayed_job"
-http://github.com/tobi/delayed_job/tree/master
-=end
 
 rails.install_gems
 

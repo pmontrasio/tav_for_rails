@@ -21,6 +21,7 @@
 class Hoptoad
   def add(options = {})
     apy_key = options[:api_key] || "<your api key here>"
+    # FIXME Hoptoad deprecated the plugin. Install the gem instead.
     Utils.install_plugin("git://github.com/thoughtbot/hoptoad_notifier.git")
     Utils.copy_to_initializers("hoptoad", "hoptoad.rb") do |line|
       line.gsub("#####API_KEY#####", api_key)
