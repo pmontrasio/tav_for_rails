@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: RestfulAuthentication</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">RestfulAuthentication</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../files/lib/restful_authentication/restful_authentication_rb.html">
+                lib/restful_authentication/restful_authentication.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                Object
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>RestfulAuthentiction</h1>
+<p>
+Adds <a href="RestfulAuthentication.html">RestfulAuthentication</a> to your
+Rails application, a plugin that provides a foundation for securely
+managing user authentication. <a
+href="http://github.com/technoweenie/restful-authentication">github.com/technoweenie/restful-authentication</a>
+</p>
+<p>
+WARNING: The installation of <a
+href="RestfulAuthentication.html">RestfulAuthentication</a> requires git.
+</p>
+<h2>Usage</h2>
+<pre>
+ rails = TavForRails::Project.new(options)
+ rails.add &quot;RestfulAuthentication&quot;, options
+</pre>
+<p>
+It runs this generator
+</p>
+<pre>
+  script/generate authenticated user sessions --include-activation --stateful --aasm
+</pre>
+<p>
+and installs authenticated_system.rb in lib and includes it into
+ApplicationController
+</p>
+<h2>Options and examples</h2>
+<p>
+Anything you might want to pass to the generator as a String. Example:
+</p>
+<pre>
+  &quot;--rspec --skip-migration --skip-routes --old-passwords&quot;
+</pre>
+
+    </div>
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000006">add</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M000006" class="method-detail">
+        <a name="M000006"></a>
+
+        <div class="method-heading">
+          <a href="#M000006" class="method-signature">
+          <span class="method-name">add</span><span class="method-args">(options = {})</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000006-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000006-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/restful_authentication/restful_authentication.rb, line 27</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add</span>(<span class="ruby-identifier">options</span> = {})
+    <span class="ruby-identifier">args</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">class</span> <span class="ruby-operator">==</span> <span class="ruby-constant">String</span> <span class="ruby-value">? </span><span class="ruby-identifier">options</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;&quot;</span>
+
+    <span class="ruby-constant">Utils</span>.<span class="ruby-identifier">git_clone</span>(<span class="ruby-value str">&quot;git://github.com/technoweenie/restful-authentication.git restful_authentication&quot;</span>,
+                    <span class="ruby-identifier">:directory</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;vendor/plugins&quot;</span>)
+    <span class="ruby-constant">Utils</span>.<span class="ruby-identifier">generate</span>(<span class="ruby-node">&quot;authenticated user sessions --include-activation --stateful --aasm #{args}&quot;</span>)
+    <span class="ruby-comment cmt"># for --include-activation and for --stateful add to config/environment.rb </span>
+    <span class="ruby-comment cmt"># config.active_record.observers = :user_observer</span>
+    <span class="ruby-constant">Utils</span>.<span class="ruby-identifier">add_routes</span>(<span class="ruby-value str">&quot;  map.activate '/activate/:activation_code', :controller =&gt; 'users', :action =&gt; 'activate', :activation_code =&gt; nil
+  map.resources :users, :member =&gt; { :suspend =&gt; :put, :unsuspend =&gt; :put, :purge =&gt; :delete }&quot;</span>)
+    <span class="ruby-constant">Utils</span>.<span class="ruby-identifier">db_migrate</span> <span class="ruby-comment cmt"># execs the migration to create the users table</span>
+    <span class="ruby-constant">Utils</span>.<span class="ruby-identifier">add_to_rails_initializer</span>(<span class="ruby-value str">&quot;  config.active_record.observers = :user_observer&quot;</span>)
+    <span class="ruby-constant">Utils</span>.<span class="ruby-identifier">copy_to_lib</span>(<span class="ruby-value str">&quot;restful_authentication&quot;</span>, <span class="ruby-value str">&quot;authenticated_system.rb&quot;</span>)
+    <span class="ruby-constant">Utils</span>.<span class="ruby-identifier">add_to_application_controller</span>(<span class="ruby-value str">&quot;  include AuthenticatedSystem&quot;</span>)
+  <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

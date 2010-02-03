@@ -1,0 +1,11 @@
+$LOAD_PATH.unshift "../lib"
+
+task :default => :test
+
+desc 'Run all tests'
+task :test do
+   Dir.glob("**/test_*.rb").each do |path|
+    puts ""
+    ruby "-I../lib -rubygems #{path}"
+   end
+end

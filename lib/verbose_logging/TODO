@@ -1,0 +1,3 @@
+The option of setting once for all the session id with
+$SESSION_ID = "my_session_id" is ugly.
+logger.session_id = "my_session_id" would be much better.

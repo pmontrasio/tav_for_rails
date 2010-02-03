@@ -1,0 +1,156 @@
+= tav_for_rails
+
+tav_for_rails is a library that let's you save time when creating
+a new Rails application. It configures common (and not so common) gems
+and plugins for you. New configurations can be added by adding your
+code into the gems lib directory.
+
+== Website
+
+* Homepage[http://www.connettiva.eu/tav_for_rails]
+* On github[http://github.com/pmontrasio/tav_for_rails/]
+
+== Features
+
+* Configures these well known plugins and gems:
+  * aasm, rubyist version
+  * get_text, mutoh version
+  * restful_authentication
+  * tz_info
+  * will_paginate
+  * hoptoad
+
+* It also includes some other libraries that the author has built and used in its own projects along the years:
+  * migration_helpers, add and remove foreign_keys from migrations
+  * verbose_logging, extra info in the log files
+  * stack_dump, log the location of errors in rescued exceptions
+  * log_filtering, assists in filtering params out of log files
+  * emacs_tags, rake task to generate the TAGS file for emacs
+
+== Requirements
+
+* Tested on Linux with ruby 1.8.7
+* It should work on a Mac
+* Probably it won't work on Windows but porting should not be overly difficult
+
+== Install
+
+* [sudo] gem install tav_for_rails -s http://gems.github.com/
+
+== Usage
+
+=== Creating a new Rails application
+
+Create a file like this one
+
+  require "rubygems"
+  require "tav_for_rails"
+  
+  include TavForRails
+  
+  rails = TavForRails::Project.create("my_project", :rails_version => "2.3.4", :database => "postgresql")
+  rails.add "GetText", :project => "my_project", :version => "2.0.4", :default_language => "en", :languages => ["en", "it"]
+  rails.add "WillPaginate"
+  rails.add "Aasm"
+  rails.add "TzInfo"
+  rails.add "Hoptoad", :api_key => "1234567890" # use your key
+  rails.add "RestfulAuthentication"
+  rails.add "EmacsTags"
+  rails.add "VerboseLogging"
+  rails.add "MigrationHelpers"
+  rails.add "StackDump"
+  rails.add "LogFiltering"
+  rails.install_gems
+
+The <tt>create</tt> method generates a Rails application in the my_project directory.
+The <tt>add</tt> methods install the gems, plugins and libraries passed as argument,
+configure Rails to start it up and may also create the database tables they need. For
+example <tt>rails.add "RestfulAuthentication"</tt> generates and runs a migration
+to create the users table for restful_authentication.
+
+=== Adding to an existing application
+
+Don't call <tt>create</tt> but just <tt>new</tt>
+
+  rails = TavForRails::Project.new("my_project")
+  rails.add "WillPaginate"
+
+<tt>new</tt> doesn't run rails again to create the project so your files
+don't risk getting overwritten. However rails asks for confirmation when it
+has to change an existing file so there isn't much to be risked by calling the wrong method.
+
+== Adding support for the_gem_i_need
+
+tav_for_rails doesn't support yet every single gem, plugin and library
+but includes a simple way to add support for new ones.
+
+=== Writing a plugins
+
+Go to the gem directory, maybe <tt>/usr/lib/ruby/gems/1.8/gems/tav_for_rails-0.1.0</tt>.
+To add support for the_gem_i_need (it could be a plugin or anything),
+create a lib/the_gem_i_need directory and a the_gem_i_need.rb
+file in it. You just created a plugin.
+
+For your plugin to work you need to create a class with one public method:
+<tt>add(options = {})</tt>. The <tt>options</tt> argument is not used internally
+by tav_for_rails but it comes handy if you need to pass configuration data to set up
+the_gem_i_need.
+
+  class the_gem_i_need
+    def add(options = {})
+      # your code here
+    end
+  end
+
+=== Using the Utils methods
+
+The rdoc about +TavForRails+ describes some utility methods you should
+use to install files into the Rails directories and to update configuration files.
+You probably want to check lib/get_text/get_text.rb or
+lib/restful_authentication/restful_authentication.rb
+They provide pretty complete examples of how to use the tav_for_rails
+internal API to configure a Rails application.
+The hoptoad and migration_helpers plugins are good examples of simpler
+configurtion.
+Just remeber that any file you need to copy in a Rails directory using
+tav_for_rails utility methods must go into the files directory of your
+plugin.
+
+== Why this tav_for_rails name?
+
+TAV is the Italian high speed train whih saves hours travelling between
+Italian cities. tav_for_rails does the same,
+saving you uninteresting hours spent installing and configuring plugins
+and gems (and possibly figuring out what you made wrong) whenever
+you start a new Rails project. The ease of quickly getting a properly
+configured application with all the plugins you like to use can make
+the difference between starting a new project as soon as you have an interesting idea
+or delaying it to another day.
+
+And yes, many countries have high speed trains
+http://en.wikipedia.org/wiki/High-speed_rail_by_country
+but I happen to live in Italy so you'll forgive me if I named this library
+after our one :-)
+
+== License
+
+tav_for_rails is (C) 2009 Paolo Montrasio and is licensed under the GPLv3 licence
+(See the file 'COPYING'.)
+
+The files in the /files directory of the plugins in the /lib directory may have
+their own licence. In that case they are included in tav_for_rails only
+for convenience and are not covered by its license.
+
+== Maintainer
+
+Paolo Montrasio <paolo.montrasio at connettiva.eu>
+
+== Similar projects
+
+You might want to look into other attempts to solve the problem of generating
+Rails applications
+
+* hobo, http://hobocentral.net/
+* bort, http://github.com/fudgestudios/bort/tree
+
+Send me mail if you know other similar projects.
